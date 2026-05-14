@@ -1,0 +1,39 @@
+services:
+  # Backend API
+  - type: web
+    name: ecommerce-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DB_URI
+        sync: false
+      - key: WEBHOOK_URL
+        sync: false
+      - key: ADMIN_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
+
+  # Frontend Static Site
+  - type: web
+    name: ecommerce-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: find . -name "api.js" -exec sed -i "s|API_URL_PLACEHOLDER|${API_URL}|g" {} +
+    publishPath: ./
+    envVars: 
+      - key: API_URL
+        sync: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+    routes:
+      - type: rewrite
+        source: /collection/*
+        destination: /collection.html
+      - type: rewrite
+        source: /product/*
+        destination: /product.html
