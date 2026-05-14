@@ -23,30 +23,36 @@ export default function AdminCustomersPage() {
   }, []);
 
   const filtered = search
-    ? customers.filter((c: any) => c.name?.includes(search) || c.phone?.includes(search))
+    ? customers.filter((c: any) => 
+        (c.name && c.name.includes(search)) || 
+        (c.customerName && c.customerName.includes(search)) ||
+        (c.phone && c.phone.includes(search)) ||
+        (c.customerPhone && c.customerPhone.includes(search))
+      )
     : customers;
 
   return (
     <div style={{ maxWidth: "1200px" }}>
       <div className="flex-between mb-24">
         <div>
-          <h1 className="page-title" style={{ marginBottom: "4px" }}>العملاء</h1>
-          <p className="page-subtitle" style={{ marginBottom: 0 }}>إدارة عملائك</p>
+          <h1 className="page-title">العملاء</h1>
+          <p className="page-subtitle">إدارة عملائك</p>
         </div>
       </div>
 
-      <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
+      <div className="admin-card mb-24" style={{ padding: 0 }}>
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9" }}>
           <input
             type="text"
+            className="form-control"
             placeholder="البحث في العملاء..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ width: "100%", maxWidth: "300px", padding: "8px 16px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "0.9rem" }}
+            style={{ maxWidth: "300px" }}
           />
         </div>
-        <div className="table-wrapper" style={{ boxShadow: "none", borderRadius: 0, margin: 0, border: "none" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
+        <div className="table-wrapper" style={{ border: "none", borderRadius: 0 }}>
+          <table>
             <thead>
               <tr>
                 <th>الاسم</th>
@@ -57,7 +63,7 @@ export default function AdminCustomersPage() {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={4} className="text-center" style={{ padding: "40px 0" }}><div className="spinner" style={{ margin: "0 auto" }}></div></td></tr>
+                <tr><td colSpan={4} className="text-center" style={{ padding: "40px 0" }}><div className="spinner"></div></td></tr>
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={4} className="text-center" style={{ padding: "40px 0", color: "var(--text-muted)" }}>لا يوجد عملاء</td></tr>
               ) : (
@@ -77,3 +83,4 @@ export default function AdminCustomersPage() {
     </div>
   );
 }
+

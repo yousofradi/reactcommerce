@@ -1,4 +1,8 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+let API_BASE_VAL = process.env.NEXT_PUBLIC_API_URL;
+if (API_BASE_VAL && !API_BASE_VAL.endsWith('/api')) {
+  API_BASE_VAL = API_BASE_VAL.replace(/\/$/, '') + '/api';
+}
+const API_BASE = API_BASE_VAL;
 
 class ApiClient {
   private _adminKey(): string {
@@ -20,10 +24,10 @@ class ApiClient {
 
     const headers: any = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
     if (opts.admin) headers['x-admin-key'] = this._adminKey();
-    
+
     const res = await fetch(`${API_BASE}${path}`, { ...opts, headers });
     const data = await res.json();
-    
+
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
     if (opts.useCache && typeof window !== 'undefined') {

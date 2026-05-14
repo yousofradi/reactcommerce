@@ -23,46 +23,44 @@ export default function AdminCollectionsPage() {
   }, []);
 
   return (
-    <div style={{ maxWidth: "1200px" }}>
+    <div className="container">
       <div className="flex-between mb-24">
         <div>
-          <h1 className="page-title" style={{ marginBottom: "4px" }}>المجموعات</h1>
-          <p className="page-subtitle" style={{ marginBottom: 0 }}>تنظيم منتجاتك في مجموعات</p>
+          <h1 className="page-title">المجموعات</h1>
+          <p className="page-subtitle">إدارة تصنيفات المنتجات</p>
         </div>
-        <Link href="/admin/collection-form" className="btn btn-primary">+ إضافة مجموعة</Link>
+        <Link href="/admin/collection-form" className="btn btn-primary">+ مجموعة جديدة</Link>
       </div>
 
-      <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
-        <div className="table-wrapper" style={{ boxShadow: "none", borderRadius: 0, margin: 0, border: "none" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "right" }}>
+      <div className="admin-card mb-24">
+        <div className="table-wrapper">
+          <table>
             <thead>
               <tr>
-                <th>الصورة</th>
                 <th>الاسم</th>
                 <th>عدد المنتجات</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={3} className="text-center" style={{ padding: "40px 0" }}><div className="spinner" style={{ margin: "0 auto" }}></div></td></tr>
+                <tr><td colSpan={4} className="text-center">
+                  <div className="spinner" style={{ margin: "0 auto" }}></div>
+                </td></tr>
               ) : collections.length === 0 ? (
-                <tr><td colSpan={3} className="text-center" style={{ padding: "40px 0", color: "var(--text-muted)" }}>لا توجد مجموعات</td></tr>
+                <tr><td colSpan={4} className="text-center">لا توجد مجموعات</td></tr>
               ) : (
-                collections.map((col: any) => (
-                  <tr key={col.id}>
+                collections.map((collection: any) => (
+                  <tr key={collection.id}>
+                    <td style={{ fontWeight: 600 }}>{collection.name}</td>
+                    <td>{collection._count?.products || 0}</td>
                     <td>
-                      <img
-                        src={col.imageUrl || "/placeholder.png"}
-                        alt={col.name}
-                        style={{ width: "40px", height: "40px", borderRadius: "6px", objectFit: "cover" }}
-                      />
+                      <span className="badge badge-success">نشط</span>
                     </td>
                     <td>
-                      <Link href={`/admin/collection-form?id=${col.id}`} style={{ fontWeight: 600, color: "var(--primary)", textDecoration: "none" }}>
-                        {col.name}
-                      </Link>
+                      <Link href={`/admin/collection-form?id=${collection.id}`} className="btn btn-secondary btn-sm">تعديل</Link>
                     </td>
-                    <td>{col.products?.length || col._count?.products || 0}</td>
                   </tr>
                 ))
               )}

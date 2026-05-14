@@ -7,17 +7,16 @@ export default function AdminSettingsPage() {
   const [storeName, setStoreName] = useState("");
   const [storePhone, setStorePhone] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [nameData, phoneData] = await Promise.allSettled([
+        const [name, phone] = await Promise.all([
           api.getSetting("storeName"),
           api.getSetting("storePhone")
         ]);
-        if (nameData.status === "fulfilled") setStoreName(nameData.value?.value || "");
-        if (phoneData.status === "fulfilled") setStorePhone(phoneData.value?.value || "");
+        setStoreName(name?.value || "");
+        setStorePhone(phone?.value || "");
       } catch (err) {
         console.error("Failed to load settings", err);
       } finally {
@@ -27,58 +26,57 @@ export default function AdminSettingsPage() {
     load();
   }, []);
 
-  const handleSave = async () => {
-    setSaving(true);
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       await Promise.all([
         api.updateSetting("storeName", storeName),
         api.updateSetting("storePhone", storePhone)
       ]);
-      alert("تم الحفظ بنجاح");
+      alert("تم حفظ الإعدادات");
     } catch (err) {
-      console.error("Failed to save settings", err);
-      alert("حدث خطأ أثناء الحفظ");
-    } finally {
-      setSaving(false);
+      alert("فشل حفظ الإعدادات");
     }
   };
 
   return (
-    <div style={{ maxWidth: "800px" }}>
-      <div className="mb-24">
-        <h1 className="page-title" style={{ marginBottom: "4px" }}>إعدادات المتجر</h1>
-        <p className="page-subtitle" style={{ marginBottom: 0 }}>تخصيص إعدادات متجرك</p>
+    <div className="container">
+      <div className="flex-between mb-24">
+        <div>
+          <h1 className="page-title">إعدادات المتجر</h1>
+          <p className="page-subtitle">تعديل معلومات المتجر الأساسية</p>
+        </div>
       </div>
 
-      {isLoading ? (
-        <div style={{ textAlign: "center", padding: "60px 0" }}><div className="spinner" style={{ margin: "0 auto" }}></div></div>
-      ) : (
-        <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "24px" }}>
-          <div className="form-group" style={{ marginBottom: "20px" }}>
-            <label className="form-label">اسم المتجر</label>
-            <input
-              type="text"
-              className="form-control"
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
-              placeholder="أدخل اسم المتجر"
-            />
-          </div>
-          <div className="form-group" style={{ marginBottom: "20px" }}>
-            <label className="form-label">هاتف المتجر</label>
-            <input
-              type="text"
-              className="form-control"
-              value={storePhone}
-              onChange={(e) => setStorePhone(e.target.value)}
-              placeholder="أدخل رقم الهاتف"
-            />
-          </div>
-          <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-            {saving ? "جارٍ الحفظ..." : "حفظ الإعدادات"}
-          </button>
-        </div>
-      )}
+      <div className="admin-card mb-24">
+        {isLoading ? (
+          <div className="text-center p-40"><div className="spinner"></div></div>
+        ) : (
+          <form onSubmit={handleSave}>
+            <div className="form-group">
+              <label className="form-label">اسم المتجر</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={storeName} 
+                onChange={(e) => setStoreName(e.target.value)} 
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">رقم الهاتف (واتساب)</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                value={storePhone} 
+                onChange={(e) => setStorePhone(e.target.value)} 
+              />
+            </div>
+            <div className="form-actions mt-24 flex-end">
+              <button type="submit" className="btn btn-primary">حفظ الإعدادات</button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
