@@ -13,23 +13,73 @@ export default function AdminProductsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    pages: 1
+  });
 
-  useEffect(() => {
-    fetchProducts();
-  }, [page, search]);
-
-  const fetchProducts = async () => {
-    setIsLoading(true);
+  const loadProducts = async () => {
+    setLoading(true);
     try {
-      const res = await api.getProducts(page, 20, true, "", search);
-      setProducts(res.products || []);
-      setTotalPages(res.totalPages || 1);
-      setTotalProducts(res.total || 0);
+      const data = await api.getProducts(
+        pagination.page, 
+        pagination.limit, 
+        true, 
+        "", 
+        search, 
+        filter === "variable" ? "true" : ""
+      );
+      setProducts(data.products || []);
+      setPagination(prev => ({ ...prev, total: data.total, pages: data.pages }));
     } catch (err) {
       console.error("Failed to load products", err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, [pagination.page, pagination.limit, filter]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPagination(prev => ({ ...prev, page: 1 }));
+    loadProducts();
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === products.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(products.map(p => p.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const bulkAction = async (action: string) => {
+    if (!selectedIds.length) return;
+    setBulkMenuOpen(false);
+    try {
+      if (action === 'delete') {
+        if (confirm(`هل أنت متأكد من حذف ${selectedIds.length} منتج؟`)) {
+          await api.deleteProductsBatch(selectedIds);
+          setSelectedIds([]);
+          loadProducts();
+        }
+      } else if (action === 'active' || action === 'draft') {
+        // Implement batch update status if API exists
+        alert("سيتم تفعيل هذا الإجراء قريباً");
+      }
+    } catch (err) {
+      alert("فشل تنفيذ الإجراء");
     }
   };
 
@@ -37,23 +87,10 @@ export default function AdminProductsPage() {
     <div style={{ maxWidth: "1200px" }}>
       <div className="flex-between mb-24">
         <div>
-          <h1 className="page-title">المنتجات</h1>
-          <p className="page-subtitle">إدارة منتجات متجرك</p>
+          <h1 className="page-title" style={{ marginBottom: "4px" }}>المنتجات</h1>
+          <p className="page-subtitle" style={{ marginBottom: 0 }}>إدارة منتجات متجرك</p>
         </div>
         <div className="flex gap-12">
-          <button className="btn btn-secondary" onClick={() => setBulkModalOpen(true)}>
-            + إضافة عدة منتجات
-          </button>
-          <Link href="/admin/product-form" className="btn btn-primary">
-            + إضافة منتج
-          </Link>
-        </div>
-      </div>
-
-      <div className="admin-card mb-24" style={{ padding: 0 }}>
-        <div id="filter-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #f1f5f9", flexWrap: "wrap", gap: "16px" }}>
-          <div className="order-tabs">
-            <span
               className={`order-tab ${filter === "all" ? "active" : ""}`}
               onClick={() => setFilter("all")}
             >
