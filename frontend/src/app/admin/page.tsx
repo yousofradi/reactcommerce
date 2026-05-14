@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { api } from "@/lib/api";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -9,30 +10,35 @@ export default function AdminDashboard() {
     orders: 0,
     revenue: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In a full implementation, this will fetch from /api/products and /api/orders
     const loadStats = async () => {
       try {
-        // const [productsRes, ordersRes] = await Promise.all([
-        //   fetch('/api/products'),
-        //   fetch('/api/orders')
-        // ]);
-        // const products = await productsRes.json();
-        // const orders = await ordersRes.json();
+        const [productsData, ordersData] = await Promise.all([
+          api.getProducts(1, 1), // Just to get total
+          api.getOrders()
+        ]);
         
-        // Mock data
+        const productsCount = productsData.total || 0;
+        const ordersCount = ordersData.length || 0;
+        const revenue = ordersData.reduce((acc: number, order: any) => acc + (order.paidAmount || 0), 0);
+        
         setStats({
-          products: 15,
-          orders: 42,
-          revenue: 15400,
+          products: productsCount,
+          orders: ordersCount,
+          revenue: revenue,
         });
       } catch (err) {
         console.error("Failed to load stats", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadStats();
   }, []);
+
+  const formatPrice = (p: number) => `${Number(p || 0).toLocaleString('ar-EG')} ج.م`;
 
   return (
     <div style={{ maxWidth: "1000px" }}>
@@ -42,19 +48,19 @@ export default function AdminDashboard() {
       <div className="grid grid-3 mb-24" id="stats">
         <div className="admin-card text-center">
           <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--primary)" }}>
-            {stats.products || "—"}
+            {isLoading ? "—" : stats.products}
           </div>
           <div className="text-muted mt-8">المنتجات</div>
         </div>
         <div className="admin-card text-center">
           <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--primary)" }}>
-            {stats.orders || "—"}
+            {isLoading ? "—" : stats.orders}
           </div>
           <div className="text-muted mt-8">الطلبات</div>
         </div>
         <div className="admin-card text-center">
           <div style={{ fontSize: "2rem", fontWeight: 700, color: "var(--success)" }}>
-            {stats.revenue ? `${stats.revenue} ج.م` : "—"}
+            {isLoading ? "—" : formatPrice(stats.revenue)}
           </div>
           <div className="text-muted mt-8">الإيرادات</div>
         </div>
