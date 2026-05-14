@@ -37,12 +37,13 @@ class ApiClient {
   }
 
   // Products
-  getProducts(page?: number, limit?: number, admin = true, collectionId = '', search = '') {
+  getProducts(page?: number, limit?: number, admin = true, collectionId = '', search = '', variable = '') {
     let url = `/products?admin=${admin}`;
     if (page) url += `&page=${page}`;
     if (limit) url += `&limit=${limit}`;
     if (collectionId) url += `&collectionId=${collectionId}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (variable) url += `&variable=${variable}`;
     return this._request(url, { useCache: !admin });
   }
 
