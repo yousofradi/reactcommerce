@@ -18,12 +18,12 @@ router.get('/paymentMethods', async (req: Request, res: Response) => {
 });
 
 router.get('/:key', async (req: Request, res: Response) => {
-  if (String(req.params.id) === 'pwa' || String(req.params.id) === 'paymentMethods') return; // Handled by other routes
+  if (req.params.key === 'pwa' || req.params.key === 'paymentMethods') return; 
   try {
     const setting = await prisma.setting.findUnique({
-      where: { key: String(req.params.id) }
+      where: { key: String(req.params.key) }
     });
-    res.json(setting ? setting.value : null);
+    res.json(setting ? { key: setting.key, value: setting.value } : null);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -32,11 +32,11 @@ router.get('/:key', async (req: Request, res: Response) => {
 router.post('/:key', async (req: Request, res: Response) => {
   try {
     const setting = await prisma.setting.upsert({
-      where: { key: String(req.params.id) },
+      where: { key: String(req.params.key) },
       update: { value: req.body.value },
-      create: { key: String(req.params.id), value: req.body.value }
+      create: { key: String(req.params.key), value: req.body.value }
     });
-    res.json(setting.value);
+    res.json({ key: setting.key, value: setting.value });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
