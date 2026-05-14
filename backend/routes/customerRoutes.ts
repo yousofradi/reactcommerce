@@ -32,7 +32,7 @@ router.get('/', async (req: Request, res: Response) => {
 // GET /api/customers/:phone — Specific customer profile & history
 router.get('/:phone', async (req: Request, res: Response) => {
   try {
-    const phone = String(req.params.id);
+    const phone = String(req.params.phone);
     
     // Get stats
     const statsArr: any[] = await prisma.$queryRaw`
