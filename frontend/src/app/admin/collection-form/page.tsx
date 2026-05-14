@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 
-export default function CollectionFormPage() {
+function CollectionFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -104,5 +104,13 @@ export default function CollectionFormPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function CollectionFormPage() {
+  return (
+    <Suspense fallback={<div className="text-center p-40"><div className="spinner"></div></div>}>
+      <CollectionFormContent />
+    </Suspense>
   );
 }
