@@ -37,7 +37,7 @@ class ApiClient {
   }
 
   // Products
-  getProducts(page?: number, limit?: number, admin = true, collectionId = '', search = '', variable = '') {
+  getProducts(page?: number, limit?: number, admin: boolean = true, collectionId: string = '', search: string = '', variable: string = '') {
     let url = `/products?admin=${admin}`;
     if (page) url += `&page=${page}`;
     if (limit) url += `&limit=${limit}`;
