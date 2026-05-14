@@ -6,7 +6,7 @@ const router = express.Router();
 // GET all products
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { admin, search, page, limit, collectionId } = req.query;
+    const { admin, search, page, limit, collectionId, variable } = req.query;
     
     // Pagination
     const take = limit ? parseInt(limit as string) : undefined;
@@ -22,11 +22,20 @@ router.get('/', async (req: Request, res: Response) => {
       where.name = { contains: search as string, mode: 'insensitive' };
     }
     if (collectionId) {
-      // In Prisma, we mapped it as many-to-many "collections" or "primaryCollectionId"
-      // We will search both for backward compatibility
       where.OR = [
-        { primaryCollectionId: collectionId },
+        { primaryCollectionId: collectionId as string },
         { collections: { some: { id: collectionId as string } } }
+      ];
+    }
+    if (variable === 'true') {
+      where.AND = [
+        ...(where.AND || []),
+        {
+          OR: [
+            { NOT: { variants: { equals: [] } } },
+            { NOT: { options: { equals: [] } } }
+          ]
+        }
       ];
     }
 

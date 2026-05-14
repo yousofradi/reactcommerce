@@ -10,10 +10,10 @@ export default function AdminProductsPage() {
   const [isBulkModalOpen, setBulkModalOpen] = useState(false);
   const [isBulkMenuOpen, setBulkMenuOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  
+
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
@@ -25,11 +25,11 @@ export default function AdminProductsPage() {
     setIsLoading(true);
     try {
       const data = await api.getProducts(
-        pagination.page, 
-        pagination.limit, 
-        true, 
-        "", 
-        search, 
+        pagination.page,
+        pagination.limit,
+        true,
+        "",
+        search,
         filter === "variable" ? "true" : ""
       );
       setProducts(data.products || []);
@@ -60,7 +60,7 @@ export default function AdminProductsPage() {
   };
 
   const toggleSelect = (id: string) => {
-    setSelectedIds(prev => 
+    setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
@@ -100,54 +100,54 @@ export default function AdminProductsPage() {
         {!selectedIds.length ? (
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #f1f5f9", flexWrap: "wrap", gap: "16px" }}>
             <div style={{ display: "flex", gap: "24px", alignItems: "center" }} className="order-tabs">
-              <span 
-                className={`order-tab ${filter === "all" ? "active" : ""}`} 
+              <span
+                className={`order-tab ${filter === "all" ? "active" : ""}`}
                 onClick={() => setFilter("all")}
               >
                 الجميع <span className="tab-badge">{pagination.total}</span>
               </span>
-              <span 
-                className={`order-tab ${filter === "variable" ? "active" : ""}`} 
+              <span
+                className={`order-tab ${filter === "variable" ? "active" : ""}`}
                 onClick={() => setFilter("variable")}
               >
                 متعدد <span className="tab-badge">0</span>
               </span>
             </div>
-            
+
             <div style={{ position: "relative", width: "300px", maxWidth: "100%" }}>
               <form onSubmit={handleSearch}>
-                <input 
-                  type="text" 
-                  placeholder="البحث في المنتجات" 
+                <input
+                  type="text"
+                  placeholder="البحث في المنتجات"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="form-control"
-                  style={{ paddingLeft: "40px" }} 
+                  style={{ paddingLeft: "40px" }}
                 />
               </form>
               <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8", pointerEvents: "none" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
               </span>
             </div>
           </div>
         ) : (
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #f1f5f9", background: "#fff", gap: "12px" }}>
-            <button 
-              className="btn btn-primary" 
+            <button
+              className="btn btn-primary"
               onClick={() => setSelectedIds([])}
               style={{ borderRadius: "20px", padding: "8px 16px", border: "none", background: "var(--primary)", color: "#fff", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}
             >
               تم تحديد <span id="selected-count-badge">{selectedIds.length}</span>
-              <span style={{ background: "rgba(255,255,255,0.2)", borderRadius: "4px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyCenter: "center", fontWeight: "bold" }}>-</span>
+              <span style={{ background: "rgba(255,255,255,0.2)", borderRadius: "4px", width: "18px", height: "18px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>-</span>
             </button>
             <div style={{ position: "relative" }}>
-              <button 
-                className="btn btn-secondary" 
+              <button
+                className="btn btn-secondary"
                 onClick={() => setBulkMenuOpen(!isBulkMenuOpen)}
                 style={{ borderRadius: "20px", padding: "8px 16px", border: "1px solid #e2e8f0", background: "#fff", color: "#475569", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}
               >
                 إجراءات
-                <span style={{ fontSize: "0.8rem", marginTop: "2px" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg></span>
+                <span style={{ fontSize: "0.8rem", marginTop: "2px" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" /></svg></span>
               </button>
               {isBulkMenuOpen && (
                 <div style={{ position: "absolute", top: "100%", right: 0, marginTop: "8px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 10px 25px -3px rgba(0,0,0,0.15)", width: "220px", zIndex: 100, overflow: "hidden", padding: "6px" }}>
@@ -172,10 +172,10 @@ export default function AdminProductsPage() {
             <thead>
               <tr>
                 <th style={{ width: "40px" }}>
-                  <input 
-                    type="checkbox" 
-                    checked={selectedIds.length === products.length && products.length > 0} 
-                    onChange={toggleSelectAll} 
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.length === products.length && products.length > 0}
+                    onChange={toggleSelectAll}
                   />
                 </th>
                 <th>الصورة</th>
@@ -193,17 +193,17 @@ export default function AdminProductsPage() {
                 products.map((product) => (
                   <tr key={product.id}>
                     <td>
-                      <input 
-                        type="checkbox" 
-                        checked={selectedIds.includes(product.id)} 
-                        onChange={() => toggleSelect(product.id)} 
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(product.id)}
+                        onChange={() => toggleSelect(product.id)}
                       />
                     </td>
                     <td>
-                      <img 
-                        src={product.imageUrl || (product.images && product.images[0]) || "/placeholder.png"} 
-                        alt="" 
-                        style={{ width: "40px", height: "40px", borderRadius: "8px", objectFit: "cover" }} 
+                      <img
+                        src={product.imageUrl || (product.images && product.images[0]) || "/placeholder.png"}
+                        alt=""
+                        style={{ width: "40px", height: "40px", borderRadius: "8px", objectFit: "cover" }}
                       />
                     </td>
                     <td>
@@ -222,17 +222,17 @@ export default function AdminProductsPage() {
               )}
             </tbody>
           </table>
-          
+
           <div className="pagination-bar">
             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <button 
+              <button
                 className="btn btn-secondary btn-sm"
                 disabled={pagination.page <= 1}
                 onClick={() => setPagination(p => ({ ...p, page: Math.max(1, p.page - 1) }))}
               >
                 السابق
               </button>
-              <select 
+              <select
                 className="form-control"
                 style={{ width: "auto", height: "32px", padding: "0 8px" }}
                 value={pagination.page}
@@ -242,7 +242,7 @@ export default function AdminProductsPage() {
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
-              <button 
+              <button
                 className="btn btn-secondary btn-sm"
                 disabled={pagination.page >= pagination.pages}
                 onClick={() => setPagination(p => ({ ...p, page: Math.min(pagination.pages, p.page + 1) }))}
